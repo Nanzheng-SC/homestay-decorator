@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { EditorSidebar } from './components/editor/EditorSidebar'
 import { InspectorPanel } from './components/editor/InspectorPanel'
@@ -12,34 +12,68 @@ function App() {
   const currentRoomType = useDesignStore((state) => state.currentRoomType)
   const items = useDesignStore((state) => state.items)
   const selectedItemId = useDesignStore((state) => state.selectedItemId)
+  const pendingAssetType = useDesignStore((state) => state.pendingAssetType)
   const requestRoomTypeChange = useDesignStore(
     (state) => state.requestRoomTypeChange,
   )
-  const addAsset = useDesignStore((state) => state.addAsset)
+  const beginPlacement = useDesignStore((state) => state.beginPlacement)
+  const cancelPlacement = useDesignStore((state) => state.cancelPlacement)
+  const placePendingAsset = useDesignStore((state) => state.placePendingAsset)
   const selectItem = useDesignStore((state) => state.selectItem)
   const clearSelection = useDesignStore((state) => state.clearSelection)
   const updateItemTransform = useDesignStore(
     (state) => state.updateItemTransform,
   )
+  const moveItemOnSurface = useDesignStore((state) => state.moveItemOnSurface)
   const updateItemColor = useDesignStore((state) => state.updateItemColor)
   const removeItem = useDesignStore((state) => state.removeItem)
   const saveDesign = useDesignStore((state) => state.saveDesign)
   const loadDesign = useDesignStore((state) => state.loadDesign)
   const resetDesign = useDesignStore((state) => state.resetDesign)
   const [statusMessage, setStatusMessage] = useState(
-    '选择一个房型，添加基础组件，开始搭建你的民宿房间。',
+    'Choose a room type, then place assets on the floor or walls.',
   )
 
   const activeRoom = ROOM_TYPES[currentRoomType]
   const selectedItem = items.find((item) => item.id === selectedItemId) ?? null
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') {
+        return
+      }
+
+      if (pendingAssetType) {
+        setStatusMessage(cancelPlacement().message)
+        return
+      }
+
+      if (selectedItemId) {
+        clearSelection()
+        setStatusMessage('Selection cleared.')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [cancelPlacement, clearSelection, pendingAssetType, selectedItemId])
+
   function handleRoomTypeSelect(roomTypeId: RoomTypeId) {
     setStatusMessage(requestRoomTypeChange(roomTypeId).message)
   }
 
-  function handleAddAsset(assetType: AssetTypeId) {
-    addAsset(assetType)
-    setStatusMessage(`已添加 ${ASSET_CATALOG[assetType].label}。`)
+  function handleAssetAction(assetType: AssetTypeId) {
+    const result =
+      pendingAssetType === assetType
+        ? cancelPlacement()
+        : beginPlacement(assetType)
+
+    setStatusMessage(result.message)
+  }
+
+  function handleCancelPlacement() {
+    setStatusMessage(cancelPlacement().message)
   }
 
   function handleSaveDesign() {
@@ -52,7 +86,7 @@ function App() {
 
   function handleResetDesign() {
     resetDesign()
-    setStatusMessage('已清空当前组件，保留当前房型。')
+    setStatusMessage('Scene cleared. The current room type is unchanged.')
   }
 
   function handlePositionChange(axis: keyof Vec3, value: number) {
@@ -76,7 +110,7 @@ function App() {
   }
 
   function handleRotationChange(value: number) {
-    if (!selectedItem) {
+    if (!selectedItem || selectedItem.placementSurface === 'wall') {
       return
     }
 
@@ -100,7 +134,7 @@ function App() {
 
     const removedLabel = ASSET_CATALOG[selectedItem.assetType].label
     removeItem(selectedItem.id)
-    setStatusMessage(`已移除 ${removedLabel}。`)
+    setStatusMessage(`${removedLabel} removed from the scene.`)
   }
 
   return (
@@ -108,8 +142,10 @@ function App() {
       <EditorSidebar
         currentRoomType={currentRoomType}
         itemCount={items.length}
+        pendingAssetType={pendingAssetType}
         statusMessage={statusMessage}
-        onAddAsset={handleAddAsset}
+        onAssetAction={handleAssetAction}
+        onCancelPlacement={handleCancelPlacement}
         onLoadDesign={handleLoadDesign}
         onResetDesign={handleResetDesign}
         onRoomTypeSelect={handleRoomTypeSelect}
@@ -128,10 +164,14 @@ function App() {
         <div className="scene-frame">
           <DesignCanvas
             items={items}
+            pendingAssetType={pendingAssetType}
             roomType={activeRoom}
             selectedItemId={selectedItemId}
             onClearSelection={clearSelection}
+            onMoveItemOnSurface={moveItemOnSurface}
+            onPlacePendingAsset={placePendingAsset}
             onSelectItem={selectItem}
+            onStatusMessage={setStatusMessage}
           />
         </div>
       </section>
