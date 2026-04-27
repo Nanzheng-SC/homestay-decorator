@@ -1,0 +1,67 @@
+import type { AssetCatalogEntry, AssetTypeId } from '../types/design'
+
+export const ASSET_TYPE_IDS: AssetTypeId[] = [
+  'bed',
+  'toilet',
+  'mirror',
+  'lamp',
+  'display',
+]
+
+export const ASSET_CATALOG: Record<AssetTypeId, AssetCatalogEntry> = {
+  bed: {
+    id: 'bed',
+    label: '床',
+    primitive: 'box',
+    size: { x: 2, y: 0.55, z: 1.65 },
+    defaultPosition: { x: 0, y: 0.275, z: 0.4 },
+    defaultRotation: { x: 0, y: 0, z: 0 },
+    defaultScale: { x: 1, y: 1, z: 1 },
+    color: '#d9c2a3',
+    description: '用简化的床体体块快速占位。',
+  },
+  toilet: {
+    id: 'toilet',
+    label: '马桶',
+    primitive: 'cylinder',
+    size: { x: 0.58, y: 0.72, z: 0.58 },
+    defaultPosition: { x: 1.45, y: 0.36, z: -0.9 },
+    defaultRotation: { x: 0, y: 0, z: 0 },
+    defaultScale: { x: 1, y: 1, z: 1 },
+    color: '#f4f3ef',
+    description: '卫生间基础占位件，用圆柱体表示。',
+  },
+  mirror: {
+    id: 'mirror',
+    label: '镜子',
+    primitive: 'plane',
+    size: { x: 0.95, y: 1.65, z: 0.02 },
+    defaultPosition: { x: -2.1, y: 1.45, z: 0.9 },
+    defaultRotation: { x: 0, y: Math.PI / 2, z: 0 },
+    defaultScale: { x: 1, y: 1, z: 1 },
+    color: '#b9c7cf',
+    description: '靠墙镜面，使用双面平面几何体。',
+  },
+  lamp: {
+    id: 'lamp',
+    label: '灯',
+    primitive: 'cylinder',
+    size: { x: 0.34, y: 1.4, z: 0.34 },
+    defaultPosition: { x: 1.2, y: 0.7, z: 1.25 },
+    defaultRotation: { x: 0, y: 0, z: 0 },
+    defaultScale: { x: 1, y: 1, z: 1 },
+    color: '#f1d38a',
+    description: '落地灯占位件，强调高度和暖色灯光感。',
+  },
+  display: {
+    id: 'display',
+    label: '电视 / 投影',
+    primitive: 'plane',
+    size: { x: 1.8, y: 1.05, z: 0.02 },
+    defaultPosition: { x: 0, y: 1.85, z: -1.82 },
+    defaultRotation: { x: 0, y: 0, z: 0 },
+    defaultScale: { x: 1, y: 1, z: 1 },
+    color: '#23262a',
+    description: '用平面快速表达显示设备安装位置。',
+  },
+}
