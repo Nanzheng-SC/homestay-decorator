@@ -4,6 +4,15 @@ export type AssetTypeId = 'bed' | 'toilet' | 'mirror' | 'lamp' | 'display'
 
 export type PrimitiveKind = 'box' | 'cylinder' | 'plane'
 
+export type PlacementSurface = 'floor' | 'wall'
+
+export type SceneSurfaceId =
+  | 'floor'
+  | 'northWall'
+  | 'southWall'
+  | 'westWall'
+  | 'eastWall'
+
 export type Vec3 = {
   x: number
   y: number
@@ -14,6 +23,8 @@ export interface DesignItem {
   id: string
   assetType: AssetTypeId
   primitive: PrimitiveKind
+  placementSurface: PlacementSurface
+  surfaceId: SceneSurfaceId
   position: Vec3
   rotation: Vec3
   scale: Vec3
@@ -59,6 +70,7 @@ export interface AssetCatalogEntry {
   id: AssetTypeId
   label: string
   primitive: PrimitiveKind
+  placementSurface: PlacementSurface
   size: Vec3
   defaultPosition: Vec3
   defaultRotation: Vec3
