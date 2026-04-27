@@ -15,6 +15,7 @@ type NumberFieldProps = {
   value: number
   step?: number
   min?: number
+  disabled?: boolean
   onChange: (value: number) => void
 }
 
@@ -23,6 +24,7 @@ function NumberField({
   value,
   step = 0.1,
   min,
+  disabled = false,
   onChange,
 }: NumberFieldProps) {
   return (
@@ -33,6 +35,7 @@ function NumberField({
           type="number"
           step={step}
           min={min}
+          disabled={disabled}
           value={Number(value.toFixed(2))}
           onChange={(event) => {
             const nextValue = Number(event.target.value)
@@ -55,26 +58,31 @@ export function InspectorPanel({
   onColorChange,
   onRemove,
 }: InspectorPanelProps) {
+  const rotationLocked = item?.placementSurface === 'wall'
+
   return (
     <aside className="inspector-panel panel">
       <section className="panel-section">
         <p className="eyebrow">Inspector</p>
-        <h2 className="section-title">属性面板</h2>
-        <p className="section-copy">选中组件后可以调整位置、旋转、缩放和颜色。</p>
+        <h2 className="section-title">Selected Asset</h2>
+        <p className="section-copy">
+          Use the controls below to fine-tune transforms and placeholder colors.
+        </p>
 
         {!item ? (
           <div className="inspector-empty">
-            点击 3D 区域中的床、镜子、灯等组件后，这里会显示可编辑属性。
+            Select an object in the scene to inspect its transform, color, and placement surface.
           </div>
         ) : (
           <>
             <div className="inspector-meta">
               <strong>{ASSET_CATALOG[item.assetType].label}</strong>
               <span>ID: {item.id.slice(0, 8)}</span>
+              <span>Surface: {item.surfaceId}</span>
             </div>
 
             <div className="field-block">
-              <h3>位置</h3>
+              <h3>Position</h3>
               <div className="vector-grid">
                 <NumberField
                   label="X"
@@ -95,19 +103,24 @@ export function InspectorPanel({
             </div>
 
             <div className="field-block">
-              <h3>朝向</h3>
+              <h3>Rotation</h3>
               <div className="single-grid">
                 <NumberField
-                  label="Rotation Y (deg)"
+                  label={
+                    rotationLocked
+                      ? 'Rotation Y (locked by wall surface)'
+                      : 'Rotation Y (deg)'
+                  }
                   value={(item.rotation.y * 180) / Math.PI}
                   step={5}
+                  disabled={rotationLocked}
                   onChange={(value) => onRotationYChange((value * Math.PI) / 180)}
                 />
               </div>
             </div>
 
             <div className="field-block">
-              <h3>缩放</h3>
+              <h3>Scale</h3>
               <div className="vector-grid">
                 <NumberField
                   label="Scale X"
@@ -131,11 +144,11 @@ export function InspectorPanel({
             </div>
 
             <div className="field-block">
-              <h3>颜色</h3>
+              <h3>Color</h3>
               <div className="single-grid">
                 <div className="field">
                   <label>
-                    Primitive Color
+                    Primitive color
                     <input
                       type="color"
                       value={item.color}
@@ -148,7 +161,7 @@ export function InspectorPanel({
 
             <div className="field-block">
               <button type="button" className="danger-button" onClick={onRemove}>
-                删除当前组件
+                Remove asset
               </button>
             </div>
           </>
