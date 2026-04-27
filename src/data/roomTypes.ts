@@ -9,8 +9,8 @@ export const ROOM_TYPE_IDS: RoomTypeId[] = [
 export const ROOM_TYPES: Record<RoomTypeId, RoomTypeDefinition> = {
   standard_room: {
     id: 'standard_room',
-    label: '标间',
-    description: '紧凑双床房，适合快速验证标准布局和基础陈设摆放。',
+    label: 'Standard Room',
+    description: 'Compact twin-room layout for validating the default guest-room flow.',
     width: 6,
     depth: 4,
     height: 3,
@@ -41,8 +41,8 @@ export const ROOM_TYPES: Record<RoomTypeId, RoomTypeDefinition> = {
   },
   king_room: {
     id: 'king_room',
-    label: '大床房',
-    description: '开间更宽，给床、镜子和显示设备更多展示空间。',
+    label: 'King Room',
+    description: 'A wider room shell with more space for bed, display, and mirror placement.',
     width: 7,
     depth: 5,
     height: 3.2,
@@ -73,8 +73,8 @@ export const ROOM_TYPES: Record<RoomTypeId, RoomTypeDefinition> = {
   },
   loft_room: {
     id: 'loft_room',
-    label: 'Loft',
-    description: '更高的层高让灯具、显示设备和立面构图更容易被观察。',
+    label: 'Loft Room',
+    description: 'Higher ceiling volume for testing vertical composition and wall-mounted assets.',
     width: 6,
     depth: 5,
     height: 5.2,
